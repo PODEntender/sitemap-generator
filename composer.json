@@ -25,5 +25,8 @@
         "psr-4": {
             "PODEntender\\SitemapGenerator\\": "lib/"
         }
+    },
+    "suggest": {
+        "tightenco/jigsaw": "Allows using the PODEntender\\SitemapGenerator\\Adapter\\JigsawAdapter"
     }
 }
