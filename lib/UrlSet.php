@@ -1,6 +1,6 @@
 <?php
 
-namespace PODEntender\SitemapGenerator\Domain\Model\Sitemap;
+namespace PODEntender\SitemapGenerator;
 
 class UrlSet implements \IteratorAggregate
 {

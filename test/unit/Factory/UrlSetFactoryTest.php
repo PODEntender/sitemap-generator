@@ -1,10 +1,10 @@
 <?php
 
-namespace PODEntender\SitemapGenerator\Domain\Model\Sitemap\Url\Factory;
+namespace PODEntender\SitemapGenerator\Url\Factory;
 
 use PHPUnit\Framework\TestCase;
-use PODEntender\SitemapGenerator\Domain\Model\Sitemap\Factory\UrlSetFactory;
-use PODEntender\SitemapGenerator\Domain\Model\Sitemap\Url;
+use PODEntender\SitemapGenerator\Factory\UrlSetFactory;
+use PODEntender\SitemapGenerator\Url;
 
 class UrlSetFactoryTest extends TestCase
 {

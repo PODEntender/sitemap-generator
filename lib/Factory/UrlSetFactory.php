@@ -1,9 +1,9 @@
 <?php
 
-namespace PODEntender\SitemapGenerator\Domain\Model\Sitemap\Factory;
+namespace PODEntender\SitemapGenerator\Factory;
 
-use PODEntender\SitemapGenerator\Domain\Model\Sitemap\Url;
-use PODEntender\SitemapGenerator\Domain\Model\Sitemap\UrlSet;
+use PODEntender\SitemapGenerator\Url;
+use PODEntender\SitemapGenerator\UrlSet;
 
 class UrlSetFactory
 {
