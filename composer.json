@@ -2,7 +2,7 @@
     "name": "podentender/sitemap-generator",
     "description": "A general purpose sitemap generator package for dynamic or static websites",
     "type": "library",
-    "license": "GPL3",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "PODEntender",
