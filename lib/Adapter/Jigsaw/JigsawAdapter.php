@@ -4,9 +4,10 @@ namespace PODEntender\SitemapGenerator\Adapter\Jigsaw;
 
 use PODEntender\SitemapGenerator\Factory\SitemapXmlFactory;
 use PODEntender\SitemapGenerator\Factory\UrlSetFactory;
-use TightenCo\Jigsaw\Collection\Collection;
-use DOMDocument;
+
+use Illuminate\Support\Collection;
 use TightenCo\Jigsaw\PageVariable;
+use DOMDocument;
 
 class JigsawAdapter
 {
@@ -24,9 +25,21 @@ class JigsawAdapter
     {
         $multiDimensionalArray = $pages
             ->map(function (PageVariable $page) {
-                $output = [
-                    'location' => $page->getUrl(),
-                ];
+                $sitemapUrl = $page->getUrl();
+
+                $parsedUrl = parse_url($sitemapUrl);
+
+                // If index page, don't append trailing forward slash
+                if (false === isset($parsedUrl['path'])) {
+                    $sitemapUrl = rtrim($sitemapUrl, '/');
+                } else {
+                    $pathInfo = pathinfo($parsedUrl['path']);
+
+                    // If .html, send it right away. If path-like, make sure last character is a forward slash
+                    $sitemapUrl = isset($pathInfo['extension']) ? $sitemapUrl : rtrim($sitemapUrl, '/') . '/';
+                }
+
+                $output = ['location' => $sitemapUrl];
 
                 if ($page->date) {
                     $output['lastModified'] = date_create_immutable(date('Y-m-d', $page->date));

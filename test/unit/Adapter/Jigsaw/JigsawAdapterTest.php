@@ -34,13 +34,13 @@ class JigsawAdapterTest extends TestCase
         $collection = new Collection([
             $this->createJigsawPage('page/1.html'),
             $this->createJigsawPage('page/2.html', '2019-01-01'),
-            $this->createJigsawPage('page/3.html', '2019-01-02', Url::FREQUENCY_NEVER),
-            $this->createJigsawPage('page/4.html', '2019-01-03', null, 0.7),
+            $this->createJigsawPage('page/3', '2019-01-02', Url::FREQUENCY_NEVER),
+            $this->createJigsawPage('page/4/', '2019-01-03', null, 0.7),
         ]);
 
         $sitemap = $this->jigsawAdapter->fromCollection($collection);
 
-        $expectedOutput = '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://podentender.com/page/1.html</loc></url><url><loc>https://podentender.com/page/2.html</loc><lastmod>2019-01-01</lastmod></url><url><loc>https://podentender.com/page/3.html</loc><lastmod>2019-01-02</lastmod><changefreq>never</changefreq></url><url><loc>https://podentender.com/page/4.html</loc><lastmod>2019-01-03</lastmod><priority>0.7</priority></url></urlset>';
+        $expectedOutput = '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://podentender.com/page/1.html</loc></url><url><loc>https://podentender.com/page/2.html</loc><lastmod>2019-01-01</lastmod></url><url><loc>https://podentender.com/page/3/</loc><lastmod>2019-01-02</lastmod><changefreq>never</changefreq></url><url><loc>https://podentender.com/page/4/</loc><lastmod>2019-01-03</lastmod><priority>0.7</priority></url></urlset>';
 
         $this->assertEquals($expectedOutput, str_replace(PHP_EOL, '', $sitemap->saveXML()));
     }
