@@ -1,13 +1,13 @@
 # How to use the \PODEntender\SitemapGenerator\Jigsaw\Adapter\JigsawAdapter
 
-The most common use case for this adapter is hooking it into the `afterCollections` event.
+The most common use case for this adapter is hooking it into the `afterBuild` event.
 
 In your `bootstrap.php` file add the following lines:
 
 ```php
 use \PODEntender\SitemapGenerator\Jigsaw\Adapter\JigsawAdapter;
 
-$events->afterCollections(function (Jigsaw $jigsaw) {
+$events->afterBuild(function (Jigsaw $jigsaw) {
     $pages; // Make your logic to fetch as many pages as you wish
     
     // Fetches the adapter from Dependency Injection
@@ -34,7 +34,7 @@ In order to publish all pages from these collections, do the following:
 ```php
 use \PODEntender\SitemapGenerator\Jigsaw\Adapter\JigsawAdapter;
 
-$events->afterCollections(function (Jigsaw $jigsaw) {
+$events->afterBuild(function (Jigsaw $jigsaw) {
     $posts = $jigsaw->getCollection('posts');
     $people = $jigsaw->getCollection('people');
     
@@ -61,7 +61,7 @@ $events->afterCollections(function (Jigsaw $jigsaw) {
 ```php
 use \PODEntender\SitemapGenerator\Jigsaw\Adapter\JigsawAdapter;
 
-$events->afterCollections(function (Jigsaw $jigsaw) {
+$events->afterBuild(function (Jigsaw $jigsaw) {
     $outputPath = $jigsaw->getDestinationPath();
     
     // Fetches the adapter from Dependency Injection
