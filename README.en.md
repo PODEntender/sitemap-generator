@@ -10,7 +10,7 @@ Sitemap Generator
 
 `Sitemap Generator` is a library to offer a generic way for generating sitemaps for your website.
 
-This library uses the protocol defined by the official website: [https://www.sitemaps.org]().
+This library uses the protocol defined by the official website: [https://www.sitemaps.org](https://www.sitemaps.org).
 
 ## Integrations and Adapters
 
