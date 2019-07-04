@@ -27,6 +27,10 @@ class JigsawAdapter
             ->map(function (PageVariable $page) {
                 $date = $this->fetchDataFromPage('lastModified', $page);
 
+                if (is_string($date)) {
+                    $date = date_create_immutable(date('Y-m-d', $date));
+                }
+
                 // Fallback to default post date metadata
                 if ($date === null && $page->date) {
                     $date = date_create_immutable(date('Y-m-d', $page->date));
