@@ -25,40 +25,38 @@ class JigsawAdapter
     {
         $multiDimensionalArray = $pages
             ->map(function (PageVariable $page) {
-                $sitemapUrl = $page->getUrl();
+                $date = $this->fetchDataFromPage('lastModified', $page);
 
-                $parsedUrl = parse_url($sitemapUrl);
-
-                // If index page, don't append trailing forward slash
-                if (false === isset($parsedUrl['path'])) {
-                    $sitemapUrl = rtrim($sitemapUrl, '/');
-                } else {
-                    $pathInfo = pathinfo($parsedUrl['path']);
-
-                    // If .html, send it right away. If path-like, make sure last character is a forward slash
-                    $sitemapUrl = isset($pathInfo['extension']) ? $sitemapUrl : rtrim($sitemapUrl, '/') . '/';
+                // Fallback to default post date metadata
+                if ($date === null && $page->date) {
+                    $date = date_create_immutable(date('Y-m-d', $page->date));
                 }
 
-                $output = ['location' => $sitemapUrl];
-
-                if ($page->date) {
-                    $output['lastModified'] = date_create_immutable(date('Y-m-d', $page->date));
-                }
-
-                if ($page->get('sitemap') && isset($page->sitemap['changeFrequency'])) {
-                    $output['changeFrequency'] = $page->sitemap['changeFrequency'];
-                }
-
-                if ($page->get('sitemap') && isset($page->sitemap['priority'])) {
-                    $output['priority'] = $page->sitemap['priority'];
-                }
-
-                return $output;
+                return [
+                    'location' => $this->fetchDataFromPage('loc', $page) ?? $page->getUrl(),
+                    'lastModified' => $date,
+                    'changeFrequency' => $this->fetchDataFromPage('changeFrequency', $page),
+                    'priority' => $this->fetchDataFromPage('priority', $page),
+                ];
             })
             ->toArray();
 
         return $this->sitemapXmlFactory->createFromUrlSet(
             $this->urlSetFactory->createFromMultiDimensionalArray($multiDimensionalArray)
         );
+    }
+
+    private function fetchDataFromPage(string $identifier, PageVariable $page)
+    {
+        // Search for sitemap item in page property/config
+        if ($page->sitemap === null || isset($page->sitemap[$identifier]) === false) {
+            return null;
+        }
+
+        if (is_callable($page->sitemap[$identifier])) {
+            return call_user_func($page->sitemap[$identifier], $page);
+        }
+
+        return (string) $page->sitemap[$identifier];
     }
 }
