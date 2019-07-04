@@ -29,7 +29,7 @@ class JigsawAdapterTest extends TestCase
         );
     }
 
-    public function testFromCollection(): void
+    public function testFromCollectionBackwardsCompatibility(): void
     {
         $collection = new Collection([
             $this->createJigsawPage('page/1.html'),
@@ -40,28 +40,68 @@ class JigsawAdapterTest extends TestCase
 
         $sitemap = $this->jigsawAdapter->fromCollection($collection);
 
-        $expectedOutput = '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://podentender.com/page/1.html</loc></url><url><loc>https://podentender.com/page/2.html</loc><lastmod>2019-01-01</lastmod></url><url><loc>https://podentender.com/page/3/</loc><lastmod>2019-01-02</lastmod><changefreq>never</changefreq></url><url><loc>https://podentender.com/page/4/</loc><lastmod>2019-01-03</lastmod><priority>0.7</priority></url></urlset>';
+        $expectedOutput = '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://podentender.com/page/1.html</loc></url><url><loc>https://podentender.com/page/2.html</loc><lastmod>2019-01-01</lastmod></url><url><loc>https://podentender.com/page/3</loc><lastmod>2019-01-02</lastmod><changefreq>never</changefreq></url><url><loc>https://podentender.com/page/4/</loc><lastmod>2019-01-03</lastmod><priority>0.7</priority></url></urlset>';
+
+        $this->assertEquals($expectedOutput, str_replace(PHP_EOL, '', $sitemap->saveXML()));
+    }
+
+    public function testFromCollectionUsesSitemapMetadataSection(): void
+    {
+        $collection = new Collection([
+            $this->createJigsawPage('page/1.html', '2019-01-01', 'monthly', 0.6, '/forcedUrl.html'),
+        ]);
+
+        $sitemap = $this->jigsawAdapter->fromCollection($collection);
+        $expectedOutput = '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>/forcedUrl.html</loc><lastmod>2019-01-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url></urlset>';
+
+        $this->assertEquals($expectedOutput, str_replace(PHP_EOL, '', $sitemap->saveXML()));
+    }
+
+    public function testFromCollectionUsesSitemapMetadataCallbacks(): void
+    {
+        $dateCallback = function (PageVariable $page) {
+            return new \DateTimeImmutable('2019-01-01');
+        };
+        $frequencyCallback = function (PageVariable $page) {
+            return 'monthly';
+        };
+        $priorityCallback = function (PageVariable $page) {
+            return 0.6;
+        };
+        $urlCallback = function (PageVariable $page) {
+            return '/forcedUrl.html';
+        };
+
+        $collection = new Collection([
+            $this->createJigsawPage('page/1.html', $dateCallback, $frequencyCallback, $priorityCallback, $urlCallback),
+        ]);
+
+        $sitemap = $this->jigsawAdapter->fromCollection($collection);
+        $expectedOutput = '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>/forcedUrl.html</loc><lastmod>2019-01-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url></urlset>';
 
         $this->assertEquals($expectedOutput, str_replace(PHP_EOL, '', $sitemap->saveXML()));
     }
 
     private function createJigsawPage(
-        string $url,
-        string $date = null,
-        string $changeFrequency = null,
-        float $priority = null
+        $url,
+        $date = null,
+        $changeFrequency = null,
+        $priority = null,
+        $forceUrl = null
     ): PageVariable
     {
         $page = [
             'extends' => '_layouts/test-base',
-            'date' => strtotime($date) ?? null,
+            'date' => is_callable($date) ? null : strtotime($date),
             '_meta' => new IterableObject([
                 'url' => 'https://podentender.com/' . $url,
             ]),
         ];
 
-        if ($changeFrequency || $priority) {
-            $page['sitemap'] = [];
+        $page['sitemap'] = [];
+
+        if (is_callable($date)) {
+            $page['sitemap']['lastModified'] = $date;
         }
 
         if ($changeFrequency) {
@@ -70,6 +110,10 @@ class JigsawAdapterTest extends TestCase
 
         if ($priority) {
             $page['sitemap']['priority'] = $priority;
+        }
+
+        if ($forceUrl) {
+            $page['sitemap']['loc'] = $forceUrl;
         }
 
         return new PageVariable($page);
