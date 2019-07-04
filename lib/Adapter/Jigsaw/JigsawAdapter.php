@@ -33,7 +33,7 @@ class JigsawAdapter
                 }
 
                 return [
-                    'location' => $this->fetchDataFromPage('loc', $page) ?? $page->getUrl(),
+                    'location' => $this->fetchDataFromPage('location', $page) ?? $page->getUrl(),
                     'lastModified' => $date,
                     'changeFrequency' => $this->fetchDataFromPage('changeFrequency', $page),
                     'priority' => $this->fetchDataFromPage('priority', $page),

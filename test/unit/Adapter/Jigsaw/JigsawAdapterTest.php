@@ -113,7 +113,7 @@ class JigsawAdapterTest extends TestCase
         }
 
         if ($forceUrl) {
-            $page['sitemap']['loc'] = $forceUrl;
+            $page['sitemap']['location'] = $forceUrl;
         }
 
         return new PageVariable($page);
